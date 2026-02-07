@@ -17,7 +17,6 @@ body {
   font-family: 'Poppins', sans-serif;
   background: radial-gradient(circle at center, #fff5f7 0%, #fce4ec 100%);
   overflow: hidden;
-  height: 100dvh;
 }
 
 /* ===== 3D ENVELOPE PHYSICS ===== */
