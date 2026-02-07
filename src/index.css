@@ -3,9 +3,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --pink-primary: #ff85a1;
+  --red-primary: #ff4d6d;
+}
+
 body {
   margin: 0;
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  background: radial-gradient(circle at center, #fff5f7 0%, #fce4ec 100%);
   font-family: 'Poppins', sans-serif;
-  overflow: hidden; /* Prevents scrolling during animations */
+  overflow: hidden;
+  user-select: none; /* Prevents text selection during the "No" button chase */
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(255, 77, 109, 0.2);
+  border-radius: 24px;
+}
+
+/* Floating animation for the main card */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }
