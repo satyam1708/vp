@@ -5,14 +5,13 @@ import { LOVE_LETTER_CONTENT } from '../constants/content';
 export default function Proposal({ onClose }) {
   const [open, setOpen] = useState(false);
 
-  // Memoized petals so they don't re-randomize on every render
   const petals = useMemo(
     () =>
-      Array.from({ length: 14 }).map(() => ({
+      Array.from({ length: 12 }).map(() => ({
         left: Math.random() * 100,
         delay: Math.random() * 5,
-        duration: Math.random() * 6 + 6,
-        drift: Math.random() * 40 - 20,
+        duration: Math.random() * 6 + 7,
+        drift: Math.random() * 24 - 12,
       })),
     []
   );
@@ -24,17 +23,16 @@ export default function Proposal({ onClose }) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-rose-950/70 backdrop-blur-xl flex items-center justify-center px-4"
     >
-      {/* ===== CENTER CONTAINER ===== */}
       <div className="relative w-full max-w-lg perspective-2000">
         <AnimatePresence mode="wait">
           {!open ? (
             /* ================= ENVELOPE ================= */
             <motion.div
               key="envelope"
-              initial={{ y: 120, rotateX: 25, opacity: 0 }}
+              initial={{ y: 140, rotateX: 28, opacity: 0 }}
               animate={{ y: 0, rotateX: 0, opacity: 1 }}
-              exit={{ y: -400, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+              exit={{ y: -260, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18 }}
               className="envelope-wrapper mx-auto cursor-pointer"
               onClick={() => setOpen(true)}
             >
@@ -42,7 +40,7 @@ export default function Proposal({ onClose }) {
 
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: 6 }}
+                  whileHover={{ scale: 1.08, rotate: 4 }}
                   whileTap={{ scale: 0.95 }}
                   className="wax-seal"
                 >
@@ -51,117 +49,85 @@ export default function Proposal({ onClose }) {
               </div>
 
               <p className="absolute bottom-4 w-full text-center text-rose-900/70 font-cursive animate-pulse">
-                Tap the seal to reveal…
+                Tap the seal… I wrote this for you
               </p>
             </motion.div>
           ) : (
             /* ================= LETTER ================= */
             <motion.div
               key="letter"
-              initial={{ y: 260, opacity: 0, scale: 0.92 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', damping: 22, stiffness: 100 }}
+              initial={{ y: 280, opacity: 0, scale: 0.96, rotate: -0.6 }}
+              animate={{ y: 0, opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', damping: 24, stiffness: 95 }}
               className="
                 relative
                 w-full
                 bg-[#fdf5e6]
-                rounded-xl
-                shadow-[0_30px_70px_rgba(0,0,0,0.45)]
+                rounded-[8px]
+                shadow-[0_40px_90px_rgba(0,0,0,0.35)]
                 overflow-hidden
-                border-x-[8px] sm:border-x-[14px]
-                border-y-[8px]
-                border-[#ecd98a]
+                border-x-[12px] sm:border-x-[18px]
+                border-y-[12px]
+                border-[#e3cf9f]
               "
             >
-              {/* ===== HEADER ===== */}
+              {/* HEADER */}
               <div className="h-12 sm:h-14 bg-[#ecd98a] flex items-center justify-between px-4 sm:px-6">
-                <span className="text-lg sm:text-xl">🌹</span>
+                <span>🌹</span>
                 <button
                   onClick={onClose}
                   className="text-2xl text-rose-900 hover:scale-125 transition-transform"
-                  aria-label="Close letter"
                 >
                   ✕
                 </button>
-                <span className="text-lg sm:text-xl">🌹</span>
+                <span>🌹</span>
               </div>
 
-              {/* ===== LETTER BODY ===== */}
+              {/* PAPER */}
               <div
-                className="
-                  letter-paper
-                  p-5 sm:p-8 md:p-12
-                  max-h-[72vh] sm:max-h-[78vh]
-                  overflow-y-auto
-                  no-scrollbar
-                  text-[#4a342e]
-                "
+                className="letter-paper relative p-7 sm:p-12 md:p-16 max-h-[74vh] overflow-y-auto no-scrollbar"
               >
+                {/* paper vignette */}
+                <div className="absolute inset-0 pointer-events-none paper-vignette" />
+
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.5 }}
+                  className="relative handwritten"
                 >
                   {/* TITLE */}
-                  <h2
-                    className="mb-8 sm:mb-12 text-rose-800 border-b border-rose-200 pb-4"
-                    style={{
-                      fontFamily: 'Great Vibes',
-                      fontSize: 'clamp(2.4rem, 6vw, 3.6rem)',
-                    }}
-                  >
+                  <h2 className="letter-title">
                     {LOVE_LETTER_CONTENT.title}
                   </h2>
 
-                  {/* PARAGRAPHS */}
-                  <div
-                    className="space-y-7 sm:space-y-10 font-serif italic leading-relaxed"
-                    style={{ fontSize: 'clamp(1.15rem, 3.6vw, 1.8rem)' }}
-                  >
+                  {/* BODY */}
+                  <div className="letter-body">
                     {LOVE_LETTER_CONTENT.paragraphs.map((p, i) => (
                       <motion.p
                         key={i}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.6 + 0.8 }}
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.7 + 0.9 }}
                       >
                         {p}
                       </motion.p>
                     ))}
                   </div>
 
-                  {/* DIVIDER */}
-                  <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 3, duration: 1 }}
-                    className="h-px bg-rose-300 my-12 sm:my-16"
-                  />
+                  <div className="letter-divider" />
 
                   {/* SIGNATURE */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 3.5 }}
-                    className="text-right"
-                  >
-                    <p className="italic text-lg sm:text-xl text-rose-700">
-                      {LOVE_LETTER_CONTENT.signature}
-                    </p>
-                    <p
-                      className="mt-3 text-4xl sm:text-5xl text-rose-900"
-                      style={{ fontFamily: 'Great Vibes' }}
-                    >
-                      {LOVE_LETTER_CONTENT.name}
-                    </p>
-                  </motion.div>
+                  <div className="letter-signature">
+                    <p>{LOVE_LETTER_CONTENT.signature}</p>
+                    <span>{LOVE_LETTER_CONTENT.name}</span>
+                  </div>
 
-                  {/* HEART */}
-                  <div className="flex justify-center mt-14 sm:mt-20 pb-6">
+                  <div className="flex justify-center mt-20">
                     <motion.div
-                      animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 3 }}
-                      className="text-6xl sm:text-7xl"
+                      animate={{ scale: [1, 1.12, 1] }}
+                      transition={{ repeat: Infinity, duration: 3.2 }}
+                      className="text-6xl"
                     >
                       💝
                     </motion.div>
@@ -173,7 +139,7 @@ export default function Proposal({ onClose }) {
         </AnimatePresence>
       </div>
 
-      {/* ================= ROSE PETALS ================= */}
+      {/* ROSE PETALS */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {petals.map((p, i) => (
           <motion.div
@@ -191,7 +157,7 @@ export default function Proposal({ onClose }) {
               repeat: Infinity,
               ease: 'linear',
             }}
-            className="absolute text-2xl sm:text-3xl"
+            className="absolute text-2xl opacity-70"
             style={{ left: `${p.left}%` }}
           >
             🌹
