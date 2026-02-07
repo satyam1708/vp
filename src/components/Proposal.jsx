@@ -23,9 +23,9 @@ export default function Proposal({ onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-rose-950/80 backdrop-blur-2xl flex items-center justify-center px-4 overflow-hidden"
+      className="fixed inset-0 z-[100] bg-rose-950/80 backdrop-blur-2xl flex items-center justify-center px-4"
     >
-      <div className="relative w-full max-w-lg perspective-2000 flex flex-col items-center justify-center">
+      <div className="relative w-full max-w-lg perspective-2000 flex flex-col items-center justify-center h-full">
         
         <AnimatePresence mode="wait">
           {!open ? (
@@ -40,11 +40,6 @@ export default function Proposal({ onClose }) {
             >
               <div className="envelope-top" />
               
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                 {/* Shadow inside the flap */}
-                <div className="w-full h-full bg-black/5 clip-path-envelope shadow-inner" />
-              </div>
-
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
@@ -64,39 +59,39 @@ export default function Proposal({ onClose }) {
               </motion.p>
             </motion.div>
           ) : (
-            /* ================= THE PHYSICAL REVEAL ================= */
+            /* ================= THE PHYSICAL REVEAL (SCROLL FIXED) ================= */
             <motion.div
               key="letter-revealed"
-              initial={{ y: 600, opacity: 0, rotateZ: -2 }}
-              animate={{ y: 0, opacity: 1, rotateZ: 0 }}
+              initial={{ y: 600, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{ type: 'spring', damping: 20, stiffness: 80 }}
               className="
                 relative
                 w-full
                 bg-[#fdf5e6]
-                rounded-sm
+                rounded-xl
                 shadow-[0_40px_100px_rgba(0,0,0,0.6)]
-                border-x-[12px] sm:border-x-[20px]
-                border-y-[15px]
+                border-x-[10px] md:border-x-[15px]
+                border-y-[12px]
                 border-[#ecd98a]
                 flex flex-col
+                max-h-[85vh]
               "
             >
               {/* VINTAGE HEADER */}
-              <div className="h-14 bg-[#ecd98a] flex items-center justify-between px-6 border-b border-rose-200/30">
-                <span className="text-2xl drop-shadow-sm">🌹</span>
+              <div className="h-14 bg-[#ecd98a] flex items-center justify-between px-6 shrink-0 border-b border-rose-200/30">
+                <span className="text-2xl">🌹</span>
                 <button
                   onClick={onClose}
-                  className="text-rose-900 font-bold text-2xl hover:scale-125 transition-transform p-2"
+                  className="text-rose-900 font-bold text-2xl hover:scale-125 transition-transform"
                 >
                   ✕
                 </button>
-                <span className="text-2xl drop-shadow-sm">🌹</span>
+                <span className="text-2xl">🌹</span>
               </div>
 
-              {/* PARCHMENT CONTENT */}
-              <div className="letter-paper p-8 sm:p-14 max-h-[75vh] overflow-y-auto no-scrollbar relative">
-                {/* Paper Crease Effect */}
+              {/* PARCHMENT CONTENT - This is where the scroll lives */}
+              <div className="letter-paper p-6 md:p-12 overflow-y-auto overflow-x-hidden no-scrollbar relative touch-pan-y">
                 <div className="absolute inset-0 pointer-events-none opacity-20 bg-[url('https://www.transparenttextures.com/patterns/papyros.png')]" />
                 
                 <motion.div
@@ -104,11 +99,11 @@ export default function Proposal({ onClose }) {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <h2 className="text-5xl md:text-6xl font-elegant text-rose-800 mb-10 border-b border-rose-100 pb-4">
+                  <h2 className="text-4xl md:text-6xl font-elegant text-rose-800 mb-8 border-b border-rose-100 pb-4">
                     {LOVE_LETTER_CONTENT.title}
                   </h2>
 
-                  <div className="space-y-10 text-2xl md:text-3xl font-elegant leading-relaxed text-rose-950">
+                  <div className="space-y-8 text-xl md:text-3xl font-elegant leading-relaxed text-rose-950">
                     {LOVE_LETTER_CONTENT.paragraphs.map((p, i) => (
                       <motion.p
                         key={i}
@@ -126,26 +121,19 @@ export default function Proposal({ onClose }) {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 4 }}
-                    className="mt-20 pt-10 border-t border-rose-200 text-right"
+                    className="mt-16 pt-10 border-t border-rose-200 text-right"
                   >
-                    <p className="text-2xl italic text-rose-700 mb-2">{LOVE_LETTER_CONTENT.signature}</p>
-                    <motion.span 
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      className="text-6xl md:text-8xl font-elegant text-rose-900 drop-shadow-sm block"
-                    >
+                    <p className="text-xl italic text-rose-700 mb-2">{LOVE_LETTER_CONTENT.signature}</p>
+                    <span className="text-5xl md:text-7xl font-elegant text-rose-900 drop-shadow-sm block">
                       {LOVE_LETTER_CONTENT.name}
-                    </motion.span>
+                    </span>
                   </motion.div>
 
-                  <div className="flex justify-center mt-20 pb-10">
+                  <div className="flex justify-center mt-12 pb-10">
                     <motion.div
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 5, -5, 0]
-                      }}
+                      animate={{ scale: [1, 1.2, 1] }}
                       transition={{ repeat: Infinity, duration: 3 }}
-                      className="text-8xl filter drop-shadow-md"
+                      className="text-7xl"
                     >
                       💝
                     </motion.div>
