@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import Heart from './components/Heart';
 
 const App = () => {
   const [phase, setPhase] = useState(0);
-  const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
   const [noCount, setNoCount] = useState(0);
+  const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
   const [yesButtonSize, setYesButtonSize] = useState(1);
   const [isAccepted, setIsAccepted] = useState(false);
+  const [showLetter, setShowLetter] = useState(false);
 
   const noTexts = [
     "No", "Are you sure?", "Really sure??", "Think again!", 
-    "Last chance!", "Surely not?", "You might regret this!", 
-    "Give it another thought!", "Are you absolutely sure?", 
-    "This could be a mistake!", "Have a heart!", "Don't be so cold!", 
-    "Change of heart?", "Wouldn't you reconsider?", "Is that your final answer?"
+    "Last chance!", "Surely not?", "My heart is breaking...", 
+    "Don't be so cold!", "Is that your final answer?", "Pls say yes 🥺"
   ];
 
   const questions = [
@@ -25,128 +25,157 @@ const App = () => {
   ];
 
   const handleNoHover = () => {
-    const x = Math.random() * (window.innerWidth - 150);
-    const y = Math.random() * (window.innerHeight - 100);
+    // Better mobile bounds
+    const padding = 50;
+    const x = Math.random() * (window.innerWidth - 150 - padding) + padding;
+    const y = Math.random() * (window.innerHeight - 80 - padding) + padding;
     setNoButtonPos({ x, y });
     setNoCount(noCount + 1);
-    setYesButtonSize(prev => prev + 0.3);
+    setYesButtonSize(prev => Math.min(prev + 0.3, 10)); 
+  };
+
+  const fireConfetti = () => {
+    const end = Date.now() + 3 * 1000;
+    const colors = ['#ff4d6d', '#ff85a1', '#ffffff'];
+    (function frame() {
+      confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors });
+      confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    }());
   };
 
   const handleYes = () => {
     setIsAccepted(true);
-    const duration = 15 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
-    const interval = setInterval(function() {
-      const timeLeft = animationEnd - Date.now();
-      if (timeLeft <= 0) return clearInterval(interval);
-
-      const particleCount = 50 * (timeLeft / duration);
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-    }, 250);
+    fireConfetti();
   };
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center p-6 overflow-hidden relative">
-      {/* Background Elements */}
-      <div className="absolute inset-0 -z-10">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-romantic-pink opacity-20"
-            initial={{ y: '110vh', x: `${Math.random() * 100}vw` }}
-            animate={{ y: '-10vh' }}
-            transition={{ duration: Math.random() * 10 + 10, repeat: Infinity, ease: "linear" }}
-          >
-            ❤️
-          </motion.div>
+    <div className="h-screen w-full flex flex-col items-center justify-center p-4 overflow-hidden relative selection:bg-rose-200">
+      {/* Dynamic Background Hearts */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <Heart key={i} delay={i * 1.5} x={`${Math.random() * 100}%`} />
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         {!isAccepted ? (
+          // --- PROPOSAL PHASE ---
           <motion.div
-            key={phase}
-            initial={{ opacity: 0, scale: 0.8 }}
+            key="proposal"
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.2 }}
-            className="glass-card p-8 md:p-12 max-w-lg w-full text-center animate-float"
+            exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+            className="glass-card p-8 md:p-14 max-w-xl w-full text-center animate-premium-float"
           >
-            <span className="text-5xl mb-6 block">{questions[phase].icon}</span>
-            <h1 className="text-2xl md:text-4xl font-cursive text-romantic-red mb-10 leading-relaxed">
-              {questions[phase].text}
-            </h1>
+            <motion.div key={phase} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+              <span className="text-6xl mb-6 block drop-shadow-md">{questions[phase].icon}</span>
+              <h1 className="text-3xl md:text-5xl font-cursive text-romantic-red mb-12 leading-tight">
+                {questions[phase].text}
+              </h1>
+            </motion.div>
 
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-6">
               {phase < questions.length - 1 ? (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setPhase(phase + 1)}
-                  className="bg-romantic-red text-white px-12 py-4 rounded-full shadow-lg font-bold text-xl transition-colors hover:bg-romantic-pink"
+                  className="bg-romantic-red text-white px-12 py-4 rounded-full shadow-lg font-bold text-xl"
                 >
-                  Yes, Continue ⮕
+                  Continue ⮕
                 </motion.button>
               ) : (
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
                   <motion.button
                     style={{ scale: yesButtonSize }}
                     onClick={handleYes}
-                    className="bg-green-500 text-white px-12 py-4 rounded-full font-bold shadow-xl z-50 whitespace-nowrap"
-                    whileHover={{ scale: yesButtonSize + 0.1 }}
+                    className="bg-green-500 text-white px-12 py-4 rounded-2xl font-black shadow-xl animate-yes z-50 transition-transform active:scale-90 text-xl"
                   >
-                    YES! 💖
+                    YES! 💍
                   </motion.button>
 
                   <motion.button
                     onMouseEnter={handleNoHover}
                     onTouchStart={handleNoHover}
-                    animate={{ 
-                      left: noButtonPos.x || 'auto', 
-                      top: noButtonPos.y || 'auto',
-                      position: noButtonPos.x ? 'fixed' : 'relative' 
-                    }}
-                    className="bg-gray-400 text-white px-8 py-3 rounded-full font-medium shadow-md pointer-events-auto transition-none"
+                    animate={noButtonPos.x ? { left: noButtonPos.x, top: noButtonPos.y, position: 'fixed' } : { position: 'relative' }}
+                    className="bg-gray-300 text-gray-700 px-8 py-3 rounded-xl font-semibold shadow-inner"
                   >
                     {noTexts[Math.min(noCount, noTexts.length - 1)]}
                   </motion.button>
                 </div>
               )}
             </div>
-            
-            {/* Progress dots */}
-            <div className="flex justify-center gap-2 mt-8">
-              {questions.map((_, i) => (
-                <div key={i} className={`h-2 w-2 rounded-full ${i <= phase ? 'bg-romantic-red' : 'bg-pink-200'}`} />
-              ))}
-            </div>
+          </motion.div>
+        ) : !showLetter ? (
+          // --- ENVELOPE PHASE ---
+          <motion.div
+            key="envelope"
+            initial={{ scale: 0, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            className="text-center cursor-pointer"
+            onClick={() => setShowLetter(true)}
+          >
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              className="bg-white p-6 rounded-lg shadow-2xl relative border-t-[30px] border-rose-100"
+            >
+              <div className="text-8xl mb-4">✉️</div>
+              <p className="font-cursive text-romantic-red text-xl">Tap to open your secret letter</p>
+              <motion.div 
+                animate={{ y: [0, -10, 0] }} 
+                transition={{ repeat: Infinity }}
+                className="absolute -top-12 left-1/2 -translate-x-1/2 text-4xl"
+              >
+                👇
+              </motion.div>
+            </motion.div>
           </motion.div>
         ) : (
+          // --- SECRET LOVE LETTER PHASE ---
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center glass-card p-12"
+            key="letter"
+            initial={{ y: 500, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-rose-50/90 p-4 md:p-10"
           >
-            <h1 className="text-6xl md:text-8xl font-cursive text-romantic-red mb-6">
-              I Love You! ❤️
-            </h1>
-            <p className="text-2xl text-pink-600 mb-8 font-light italic">
-              "You’ve made me the happiest person alive."
-            </p>
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              <img 
-                src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp4dnR6MmticHhqZ3Z0eHB6eHB6eHB6eHB6eHB6eHB6eHB6ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/c76IJLufpNUMvULn59/giphy.gif" 
-                alt="Love" 
-                className="w-48 mx-auto md:w-64"
-              />
-            </motion.div>
+            <div className="letter-parchment w-full max-w-2xl h-[80vh] overflow-y-auto no-scrollbar rounded-xl p-8 md:p-16 relative shadow-2xl border-2 border-rose-200">
+              <button 
+                onClick={() => setShowLetter(false)}
+                className="absolute top-4 right-4 text-romantic-red text-2xl"
+              >
+                ✕
+              </button>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 2 }}
+                className="text-2xl md:text-4xl text-rose-900 space-y-8 pb-20"
+              >
+                <p className="font-bold">My Dearest,</p>
+                <p>
+                  From the moment you entered my life, everything changed. I never knew that 
+                  one person could become my entire world in such a short time. 
+                </p>
+                <p>
+                  I promise to hold your hand through every storm, to laugh with you in every 
+                  joy, and to love you more with every single heartbeat.
+                </p>
+                <p>
+                  Today is just the beginning of our forever. Thank you for choosing me.
+                </p>
+                <p className="pt-10">Forever Yours,</p>
+                <p className="text-5xl font-cursive">Satyam ❤️</p>
+                
+                <div className="flex justify-center pt-10">
+                  <img 
+                    src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp4dnR6MmticHhqZ3Z0eHB6eHB6eHB6eHB6eHB6eHB6eHB6ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/c76IJLufpNUMvULn59/giphy.gif" 
+                    className="w-32 opacity-80"
+                  />
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
